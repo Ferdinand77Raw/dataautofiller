@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "DataPusherV1",
+  "description": "Save time by automating data filling from CRM to webform",
+  "version": "1.0",
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Open",
+    "default_icon": "fist-smash.png"
+  },
+  "icons": {
+    "16" : "fist-smash.png",
+    "32" : "fist-smash.png",
+    "48" : "fist-smash.png",
+    "128" : "fist-smash.png"
+},
+  "permissions": [
+    "storage",
+    "activeTab",
+    "declarativeContent",
+    "scripting"
+  ]
+}
