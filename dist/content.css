@@ -1,0 +1,130 @@
+/* Estilos para el contenedor */
+.extension-note {
+  position: fixed;
+  top: 30px; /* Ajusta la posición desde la parte superior */
+  right: 30px; /* Ajusta la posición desde la derecha */
+  background-color: white;
+  padding: 20px;
+  border: 1px;
+  border-color: black;
+  border-radius: 10px; /* Borde redondeado */
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Sombra */
+  z-index: 9999;
+  overflow: auto;
+  max-height: 500px;
+}
+
+/* Estilos para el formulario y la tabla */
+.extension-note form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.extension-note table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.extension-note input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.extension-note button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Opcional: Cambiar el estilo del botón cuando se coloca encima */
+.extension-note button:hover {
+  background-color: #0056b3;
+}
+
+/* Estilos para el formulario container */
+#formContainer {
+  display: none;
+  max-width: 300px; /* Ancho máximo */
+  margin-top: 10px; /* Espacio superior */
+  padding: 10px; /* Espaciado interno */
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+
+   /* Propiedades de transición */
+   transition: height 1s ease, opacity 1s ease;
+}
+
+/* Estilos para los campos de entrada y el botón en el formulario */
+#formContainer input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+#formContainer button {
+  padding: 8px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+/* Estilos para cuando el formulario está expandido */
+#formContainer.expanded {
+  display: block; /* Mostrar el formulario */
+  height: auto; /* Altura automática */
+  opacity: 1; /* Opacidad completa */
+}
+
+/*Primer formulario*/
+
+#loginContainer {
+  display: none;
+  max-width: 300px; /* Ancho máximo */
+  margin-top: 10px; /* Espacio superior */
+  padding: 10px; /* Espaciado interno */
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+
+   /* Propiedades de transición */
+   transition: height 1s ease, opacity 1s ease;
+}
+
+
+#loginContainer input{
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+#loginContainer button {
+  padding: 8px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+/* Estilos para cuando el formulario está expandido */
+#loginContainer.expanded {
+  display: block; /* Mostrar el formulario */
+  height: auto; /* Altura automática */
+  opacity: 1; /* Opacidad completa */
+}

@@ -1,0 +1,57 @@
+/* RiesgoCliente.css */
+
+.riesgo-cliente {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f5f5f5;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .riesgo-cliente table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .riesgo-cliente td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .riesgo-cliente select,
+  .riesgo-cliente input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .riesgo-cliente button {
+    display: inline-block;
+    padding: 8px 16px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 4px;
+    background-color: #00ff88;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .riesgo-cliente button:hover {
+    background-color: hsl(115, 100%, 35%);
+  }
+  
+  /* Estilos para el botón de eliminar */
+  .riesgo-cliente button.delete-button {
+    background-color: #dc3545;
+  }
+  
+  .riesgo-cliente button.delete-button:hover {
+    background-color: #a71d2a;
+  }
+  

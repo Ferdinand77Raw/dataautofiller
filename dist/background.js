@@ -1,0 +1,1 @@
+chrome.runtime.onMessage.addListener(((e,t,c)=>{"loginSuccess"===e.type&&chrome.tabs.query({active:!0,currentWindow:!0},(e=>{const t=e[0];chrome.scripting.executeScript({target:{tabId:t.id},function:()=>{}})}))}));
