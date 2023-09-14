@@ -6,7 +6,8 @@ import TextField from '@mui/material/TextField';
 import { auth, logInWithEmailAndPassword } from '../services/FirebaseAuth.js';
 import icon256 from './icon256.png';
 //import logoNuevo from '../../public/img/logoNuevo.png';
-import letraslogo from '../../public/img/letras-logo.png'
+import letraslogo from '../../public/img/letras-logo.png';
+import letraslogo2 from '../../public/img/letras-logo-2.png';
 import { Alert } from '@mui/material';
 
 const LoginForm = ({ onLogin }) => {
@@ -104,7 +105,7 @@ const LoginForm = ({ onLogin }) => {
       <div className="login-form">
 
         <img src={icon256} alt="Logo" width="100" height="100" />
-        <img src={letraslogo} alt='Logo2' width="150" height="150" />
+        <img src={letraslogo2} alt='Logo2' width="150" height="150" />
         <h2>Inicio de Sesión</h2>
         <TextField
           required

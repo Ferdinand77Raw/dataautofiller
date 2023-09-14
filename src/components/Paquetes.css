@@ -37,24 +37,20 @@
     margin-top: 8px;
     border: none;
     border-radius: 4px;
-    background-color: #00ff88;
+    background-color: #03b1fc;
     color: #fff;
     font-size: 14px;
     font-weight: bold;
     cursor: pointer;
     width: 100%;
   }
-  
-  .paquetes button:hover {
-    background-color: #00ff88;
-  }
 
  .paquetes .confirmationButton button{
     width: 100%;
-    background-color: #00ff88;
+    background-color: #03b1fc;
   }
 
-  .confirmationButton button:hover{
-    background-color: hsl(115, 100%, 35%);
+  .paquetes .confirmationButton button:hover{
+    background-color: #080248;
   }
   

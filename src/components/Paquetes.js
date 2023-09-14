@@ -12,7 +12,7 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import format from 'date-fns/format';
 
-const Paquetes = ({ clientInfo }) => {
+const Paquetes = ({ clientInfo, clearFields }) => {
 
   const [selectedPackage, setSelectedPackage] = useState('Nothing selected');
   const [startTime, setStartTime] = useState('');
@@ -185,7 +185,7 @@ const Paquetes = ({ clientInfo }) => {
                   placeholder='Paquete instalado'
                   value={clientInfo.package}
                   variant="standard"
-                  onChange={(e) => setSelectedPackage(e.target.value)} 
+                  onChange={(e) => setSelectedPackage(e.target.value)}
                 />
                 <Button className='confirmationButton' variant="contained" onClick={handleCustomDateConfirm}>
                   Confirmar fecha y paquete
@@ -223,6 +223,9 @@ const Paquetes = ({ clientInfo }) => {
       </Table>
       <Button variant="contained" type="submit" onClick={handleUpdate}>
         Actualizar
+      </Button>
+      <Button variant="contained" onClick={clearFields}>
+        Limpiar
       </Button>
     </div>
   );

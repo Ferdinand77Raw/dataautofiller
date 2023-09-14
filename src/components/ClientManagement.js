@@ -9,9 +9,11 @@ import ClientFields from './ClientFields.js';
 import Paquetes from './Paquetes';
 import RiesgoCliente from './RiesgoCliente';
 import icon256 from './icon256.png';
-import letraslogo from '../../public/img/letras-logo.png'
+import letraslogo from '../../public/img/letras-logo.png';
+import letraslogo2 from '../../public/img/letras-logo-2.png';
 
-const ClientList = ({ companyName }) => {
+const ClientList = () => {
+  const initialClientState = {};
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState('');
   const [selectedClientInfo, setSelectedClientInfo] = useState('');
@@ -87,6 +89,7 @@ const ClientList = ({ companyName }) => {
     setLastName(selectedClientInformation['last_name']);
     setPhone(selectedClientInformation['phone']);
     setAddress(selectedClientInformation['address']);
+    setEmail(selectedClientInformation['email']);
 
     // Almacenar los detalles del cliente seleccionado en localStorage
     localStorage.setItem('selectedClientInfo', JSON.stringify(selectedClientInformation));
@@ -110,7 +113,7 @@ const ClientList = ({ companyName }) => {
       chrome.scripting.executeScript({
         target: { tabId: tabId },
         function: insertClientData,
-        args: [name, last_name, address, phone, altPhone, email]
+        args: [phone, altPhone, name, last_name, email, address]
       });
     });
     console.log(`Cargando datos para el cliente ${selectedClient}`);
@@ -143,17 +146,21 @@ const ClientList = ({ companyName }) => {
   const handleDelete = () => {
     // Lógica para eliminar el cliente seleccionado
     console.log(`Eliminando el cliente ${selectedClient}`);
-
     // Eliminar los detalles del cliente del localStorage
     localStorage.removeItem('selectedClientInfo');
   };
+
+  const handleClearFields = () => {
+   clearFields();
+  };
+  
 
 
   return (
     <div className="client-management">
       <div className='title-logo'>
         <img src={icon256} alt="Logo" width="100" height="100" />
-        <img src={letraslogo} alt='Logo2' width="200" height="200" />
+        <img src={letraslogo2} alt='Logo2' width="200" height="200" />
       </div>
       <h2>Administración de Clientes</h2>
       <div className="controls">
@@ -172,7 +179,7 @@ const ClientList = ({ companyName }) => {
             </MenuItem>
           ))}
         </Select>
-        <ClientFields clientInfo={selectedClientInfo} />
+        <ClientFields clientInfo={selectedClientInfo} clearFields={handleClearFields} />
 
         <Button variant="contained" onClick={handleLoadData}>
           Cargar Datos
@@ -181,10 +188,10 @@ const ClientList = ({ companyName }) => {
           Actualizar
         </Button>
         <Button className="delete-button" variant="contained" onClick={handleDelete}>
-          Eliminar
+          Limpiar
         </Button>
-        <div><RiesgoCliente clientInfo={selectedClientInfo}></RiesgoCliente></div>
-        <div><Paquetes clientInfo={selectedClientInfo}></Paquetes></div>
+        <div><RiesgoCliente clientInfo={selectedClientInfo} clearFields={handleClearFields}></RiesgoCliente></div>
+        <div><Paquetes clientInfo={selectedClientInfo} clearFields={handleClearFields}></Paquetes></div>
       </div>
     </div>
   );

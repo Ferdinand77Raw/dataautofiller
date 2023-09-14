@@ -67,11 +67,11 @@
 }
 
 .controls button{
-  background-color: #00ff88;
+  background-color: #03b1fc;
 }
 
 .controls button:hover{
-  background-color: hsl(115, 100%, 35%);
+  background-color: #080248;
 }
 
 .controls button.delete-button {

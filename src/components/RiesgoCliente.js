@@ -10,7 +10,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 
-const RiesgoCliente = ({clientInfo}) => {
+const RiesgoCliente = ({ clientInfo, clearFields }) => {
   const [selectedOption, setSelectedOption] = useState('opcion1');
   const [accountNumber, setAccountNumber] = useState(clientInfo.accountNumber);
   const [dsiNumber, setDsiNumber] = useState(clientInfo.dsi_number);
@@ -102,6 +102,9 @@ const RiesgoCliente = ({clientInfo}) => {
               />
               <Button variant="contained" onClick={handleDsiUpdate}>
                 Actualizar
+              </Button>
+              <Button variant="contained" onClick={clearFields}>
+                Limpiar
               </Button>
             </TableCell>
           </TableRow>

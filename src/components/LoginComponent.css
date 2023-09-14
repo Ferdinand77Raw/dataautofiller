@@ -39,7 +39,7 @@
   padding: 15px;
   border: none;
   border-radius: 4px;
-  background-color: #00ff88;
+  background-color: #03b1fc;
   color: #fff;
   font-size: 14px;
   font-weight: bold;
@@ -47,7 +47,7 @@
 }
 
 .login-form button:hover {
-  background-color: hsl(115, 100%, 35%);
+  background-color: #080248;
 }
 
 /* Material-UI overrides */
