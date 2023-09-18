@@ -4,7 +4,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import './ClientManagement.css';
 import { db, auth } from '../services/FirebaseAuth.js';
-import { collection, getDocs, where, query, doc, DocumentReference } from 'firebase/firestore';
+import { collection, getDocs, where, query, doc, DocumentReference, getDoc } from 'firebase/firestore';
 import ClientFields from './ClientFields.js';
 import Paquetes from './Paquetes';
 import RiesgoCliente from './RiesgoCliente';
@@ -13,7 +13,6 @@ import letraslogo from '../../public/img/letras-logo.png';
 import letraslogo2 from '../../public/img/letras-logo-2.png';
 
 const ClientList = () => {
-  const initialClientState = {};
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState('');
   const [selectedClientInfo, setSelectedClientInfo] = useState('');
@@ -25,7 +24,6 @@ const ClientList = () => {
   const [address, setAddress] = useState('');
   const [altPhone, setAltPhone] = useState('');
   const [email, setEmail] = useState('');
-
 
   useEffect(() => {
     const storedUID = localStorage.getItem('userUID');
@@ -47,28 +45,69 @@ const ClientList = () => {
         const userSnapshot = await getDocs(userQuery);
 
         if (!userSnapshot.empty) {
+          // Si se encuentra un usuario con el mismo UID, obtén la referencia al documento de la organización
+          const userData = userSnapshot.docs[0].data();
+          const organizationRef = userData.organization; // Asumiendo que la referencia está en un campo llamado 'organization'
+          console.log("Estructura de la organización: ",organizationRef);
+          // Utiliza la referencia para obtener el documento de la organización
+          const orgParts = organizationRef.split('/');
+          const orgName = orgParts[1];
+          const orgId = orgParts[2];
+
+          console.log(orgName, orgId)
+          
+          const orgCollection = collection(db, orgName);
+          const orgDocReference = doc(orgCollection, orgId);
+
+          const organizationDoc = await getDoc(orgDocReference);
+    
+          if (organizationDoc.exists()) {
+            // Ahora puedes obtener los datos del documento de la organización
+            const organizationData = organizationDoc.data();
+            console.log('Datos de la organización:', organizationData);
+            // Aquí puedes hacer lo que necesites con los datos de la organización
+
+            const leadsCollection = collection(orgDocReference, 'leads');
+            const leadsQuery = query(leadsCollection, where('uid', '==', queryUid));
+            const querySnapshot = await getDocs(leadsQuery);
+            
+            const leadsData = querySnapshot.docs.map(doc => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+            
+            console.log('Datos de leads:', leadsData);
+            setClients(leadsData);
+          } else {
+            console.log("El documento de la organización no existe.");
+          }
+        } else {
+          console.log("No se encontró ningún usuario con esas credenciales!");
+        }
+        /*
+        if (!userSnapshot.empty) {
           // Si se encuentra un usuario con el mismo UID, obtén el organizationid
           const userData = userSnapshot.docs[0].data();
           const organizationId = userData.organizationid;
           console.log('organizationid del usuario:', organizationId);
 
+          
           const organizationsCollection = collection(db, 'organization'); // Referencia a la colección "organizations"
           const organizationDoc = doc(organizationsCollection, organizationId); // Reemplaza 'organizationId' con el ID de la organización específica que deseas acceder
           const leadsCollection = collection(organizationDoc, 'leads'); //Referencia a la coleccion "leads"
-
+          
           const leadsQuery = query(leadsCollection, where('uid', '==', queryUid));
           const querySnapshot = await getDocs(leadsQuery);
-
+          
           const leadsData = querySnapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data(),
           }));
-
+          
           setClients(leadsData);
-
         } else {
           alert("No se encontró ningún usuario con esas credenciales!")
-        }
+        }*/
 
       } catch (error) {
         console.error('Error fetching clients:', error);
@@ -149,13 +188,7 @@ const ClientList = () => {
     // Eliminar los detalles del cliente del localStorage
     localStorage.removeItem('selectedClientInfo');
   };
-
-  const handleClearFields = () => {
-   clearFields();
-  };
   
-
-
   return (
     <div className="client-management">
       <div className='title-logo'>
@@ -179,7 +212,7 @@ const ClientList = () => {
             </MenuItem>
           ))}
         </Select>
-        <ClientFields clientInfo={selectedClientInfo} clearFields={handleClearFields} />
+        <ClientFields clientInfo={selectedClientInfo} clearFields={handleDelete} />
 
         <Button variant="contained" onClick={handleLoadData}>
           Cargar Datos
@@ -188,10 +221,10 @@ const ClientList = () => {
           Actualizar
         </Button>
         <Button className="delete-button" variant="contained" onClick={handleDelete}>
-          Limpiar
+          Limpiar todos los campos
         </Button>
-        <div><RiesgoCliente clientInfo={selectedClientInfo} clearFields={handleClearFields}></RiesgoCliente></div>
-        <div><Paquetes clientInfo={selectedClientInfo} clearFields={handleClearFields}></Paquetes></div>
+        <div><RiesgoCliente clientInfo={selectedClientInfo} clearFields={handleDelete}></RiesgoCliente></div>
+        <div><Paquetes clientInfo={selectedClientInfo} clearFields={handleDelete}></Paquetes></div>
       </div>
     </div>
   );

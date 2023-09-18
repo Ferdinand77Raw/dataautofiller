@@ -1,24 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import './ClientManagement.css';
 
 const ClientFields = ({ clientInfo, clearFields }) => {
-
-  const handleFirstNameChange = (e) => {
-    setFirstName(e.target.value);
-  };
-
-  const handleLastNameChange = (e) => {
-    setLastName(e.target.value);
-  };
-
-  const handleClear = () => {
-    // Restablece los estados de los campos y llama a la función de limpieza
-    setFirstName('');
-    setLastName('');
-    clearFields();
-  };
-
   return (
     <div>
       <TextField
@@ -26,7 +11,6 @@ const ClientFields = ({ clientInfo, clearFields }) => {
         variant='outlined'
         placeholder="Name"
         value={clientInfo.name}
-        onChange={handleFirstNameChange}
         fullWidth
       />
       <TextField
@@ -35,13 +19,11 @@ const ClientFields = ({ clientInfo, clearFields }) => {
         variant='outlined'
         placeholder="Last name"
         value={clientInfo.last_name}
-        onChange={handleLastNameChange}
         fullWidth
       />
-      <Button variant="contained" onClick={handleClear}>
+      <Button variant="contained" color="primary">
         Limpiar
       </Button>
-
     </div>
   );
 };
