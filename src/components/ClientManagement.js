@@ -47,10 +47,48 @@ const ClientList = () => {
         if (!userSnapshot.empty) {
           // Si se encuentra un usuario con el mismo UID, obtén la referencia al documento de la organización
           const userData = userSnapshot.docs[0].data();
+          console.log(userData);
           const organizationRef = userData.organization; // Asumiendo que la referencia está en un campo llamado 'organization'
-          console.log("Estructura de la organización: ",organizationRef);
+
+          const orgDocument = await getDoc(organizationRef);
+
+          if (orgDocument.exists()) {
+            const organizationData = orgDocument.data();
+            console.log('Datos de la organización:', organizationData['organization']);
+            // Aquí puedes hacer lo que necesites con los datos de la organización
+            const orgName = organizationData['organization'];
+            console.log("El nombre es: ", orgName);
+            const orgCollection = collection(db, 'organizations');
+            const orgDocReference = doc(orgCollection, orgName);
+            const organizationDoc = await getDoc(orgDocReference);
+
+            if (organizationDoc.exists()) {
+              // Ahora puedes obtener los datos del documento de la organización
+              const organizationData = organizationDoc.data();
+              console.log('Datos de la organización:', organizationData);
+              // Aquí puedes hacer lo que necesites con los datos de la organización
+
+              const leadsCollection = collection(orgDocReference, 'leads');
+              const leadsQuery = query(leadsCollection, where('uid', '==', queryUid));
+              const querySnapshot = await getDocs(leadsQuery);
+
+              const leadsData = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+              }));
+
+              console.log('Datos de leads:', leadsData);
+              setClients(leadsData);
+            } else {
+              console.log("El documento de la organización no existe.");
+            }
+          } else {
+            console.log("El documento de la organización no existe.");
+          }
           // Utiliza la referencia para obtener el documento de la organización
+          /*
           const orgParts = organizationRef.split('/');
+          console.log("Datos obtenidos: ", orgParts);
           const orgName = orgParts[1];
           const orgId = orgParts[2];
 
@@ -80,35 +118,10 @@ const ClientList = () => {
             setClients(leadsData);
           } else {
             console.log("El documento de la organización no existe.");
-          }
+          }*/
         } else {
           console.log("No se encontró ningún usuario con esas credenciales!");
         }
-        /*
-        if (!userSnapshot.empty) {
-          // Si se encuentra un usuario con el mismo UID, obtén el organizationid
-          const userData = userSnapshot.docs[0].data();
-          const organizationId = userData.organizationid;
-          console.log('organizationid del usuario:', organizationId);
-
-          
-          const organizationsCollection = collection(db, 'organization'); // Referencia a la colección "organizations"
-          const organizationDoc = doc(organizationsCollection, organizationId); // Reemplaza 'organizationId' con el ID de la organización específica que deseas acceder
-          const leadsCollection = collection(organizationDoc, 'leads'); //Referencia a la coleccion "leads"
-          
-          const leadsQuery = query(leadsCollection, where('uid', '==', queryUid));
-          const querySnapshot = await getDocs(leadsQuery);
-          
-          const leadsData = querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          
-          setClients(leadsData);
-        } else {
-          alert("No se encontró ningún usuario con esas credenciales!")
-        }*/
-
       } catch (error) {
         console.error('Error fetching clients:', error);
       }
@@ -188,7 +201,7 @@ const ClientList = () => {
     // Eliminar los detalles del cliente del localStorage
     localStorage.removeItem('selectedClientInfo');
   };
-  
+
   return (
     <div className="client-management">
       <div className='title-logo'>
@@ -223,8 +236,8 @@ const ClientList = () => {
         <Button className="delete-button" variant="contained" onClick={handleDelete}>
           Limpiar todos los campos
         </Button>
-        <div><RiesgoCliente clientInfo={selectedClientInfo} clearFields={handleDelete}></RiesgoCliente></div>
-        <div><Paquetes clientInfo={selectedClientInfo} clearFields={handleDelete}></Paquetes></div>
+        {/*<div><RiesgoCliente clientInfo={selectedClientInfo} clearFields={handleDelete}></RiesgoCliente></div>*/}
+        {/*<div><Paquetes clientInfo={selectedClientInfo} clearFields={handleDelete}></Paquetes></div>*/}
       </div>
     </div>
   );
