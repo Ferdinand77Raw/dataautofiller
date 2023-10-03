@@ -17,6 +17,7 @@ const ClientList = () => {
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState('');
   const [selectedClientInfo, setSelectedClientInfo] = useState('');
+  const [leads, setLeads] = useState([]);
 
   //Constantes para pushear
   const [name, setName] = useState('');
@@ -25,6 +26,20 @@ const ClientList = () => {
   const [address, setAddress] = useState('');
   const [altPhone, setAltPhone] = useState('');
   const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    // Cargar la información del cliente desde el localStorage cuando se abre el popup
+    const storedClientInfo = localStorage.getItem('selectedClientInfo');
+    if (storedClientInfo) {
+      setSelectedClientInfo(JSON.parse(storedClientInfo));
+    }
+
+    const storedInformation = localStorage.getItem('loadedLeads');
+    if(storedInformation)
+    {
+      setClients(JSON.parse(storedInformation));
+    }
+  }, []);
 
   useEffect(() => {
     const storedUID = localStorage.getItem('userUID');
@@ -37,7 +52,7 @@ const ClientList = () => {
       if (userFbId) {
         localStorage.setItem('userUID', userFbId);
       }
-    }
+    } 
     const fetchClient = async () => {
       try {
         const queryUid = localStorage.getItem('userUID');
@@ -71,7 +86,7 @@ const ClientList = () => {
 
               const leadsCollection = collection(orgDocReference, 'leads');
               const leadsQuery = query(leadsCollection, where('uid', '==', queryUid));
-              const querySnapshot = await getDocs(leadsQuery);
+              //const querySnapshot = await getDocs(leadsQuery);
               /*
               const leadsData = querySnapshot.docs.map(doc => ({
                 id: doc.id,
@@ -87,6 +102,9 @@ const ClientList = () => {
                   ...doc.data(),
                 }));
                 setClients(leadsData);
+
+                localStorage.getItem('loadedLeads');
+                localStorage.setItem('loadedLeads', JSON.stringify(leadsData));
               });
 
               return () => {
@@ -106,6 +124,7 @@ const ClientList = () => {
         console.error('Error fetching clients:', error);
       }
     };
+    
     fetchClient();
   }, []);
 
@@ -127,15 +146,6 @@ const ClientList = () => {
     localStorage.setItem('selectedClientInfo', JSON.stringify(selectedClientInformation));
     localStorage.setItem('clientData', JSON.stringify(selectedClientInformation));
   };
-
-  useEffect(() => {
-    // Cargar la información del cliente desde el localStorage cuando se abre el popup
-    const storedClientInfo = localStorage.getItem('selectedClientInfo');
-    if (storedClientInfo) {
-      setSelectedClientInfo(JSON.parse(storedClientInfo));
-    }
-  }, []);
-
 
   const handleLoadData = () => {
     // Lógica para cargar datos relacionados con el cliente seleccionado
