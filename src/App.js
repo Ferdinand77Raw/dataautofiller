@@ -61,6 +61,7 @@ function App() {
     localStorage.removeItem('userUID');
     localStorage.removeItem('clientData');
     localStorage.removeItem('riesgoCliente');
+    localStorage.removeItem('loadedLeads');
   };
 
   const handleClients = () => {
