@@ -33,9 +33,6 @@ const ClientFields = ({ clientInfo, clearFields }) => {
         value={clientInfo.last_name}
         fullWidth
       />
-      <Button variant="contained" color="primary">
-        Limpiar
-      </Button>
     </div>
   );
 };

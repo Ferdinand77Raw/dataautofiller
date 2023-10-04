@@ -12,32 +12,6 @@
     "activeTab", 
     "scripting"
   ],
-  "background": {
-    "service_worker": "background.js"
-  },
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
-  },
-  "host_permissions": [
-    "file://*/*",
-    "http://*/",
-    "https://*/",
-    "<all_urls>"
-  ],
-  "content_scripts": [
-    {
-      "matches": [
-        "*://*.mycrmllc.com/*",
-        "*://*.saraplus.com/*"
-      ],
-      "js": [
-        "content.js"
-      ],
-      "css": [
-        "content.css"
-      ]
-    }
-  ],
   "icons": {
     "32": "./img/icon32.png",
     "48": "./img/icon48.png",

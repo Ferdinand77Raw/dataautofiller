@@ -220,12 +220,14 @@ const ClientList = () => {
         <Button variant="contained" onClick={handleLoadData}>
           Cargar Datos
         </Button>
+        {/**          
         <Button variant="contained" color="primary" onClick={handleUpdate}>
           Actualizar
         </Button>
         <Button className="delete-button" variant="contained" onClick={handleDelete}>
           Limpiar todos los campos
         </Button>
+         */}
         {/*<div><RiesgoCliente clientInfo={selectedClientInfo} clearFields={handleDelete}></RiesgoCliente></div>*/}
         {/*<div><Paquetes clientInfo={selectedClientInfo} clearFields={handleDelete}></Paquetes></div>*/}
       </div>
