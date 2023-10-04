@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Data Autofiller",
-  "version": "1.0",
+  "version": "1.0.1",
   "description": "Save time by automating data filling from one webform to other webform",
   "action": {
     "default_icon": "./img/icon128.png",
