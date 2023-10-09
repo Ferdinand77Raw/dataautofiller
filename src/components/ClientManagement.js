@@ -12,6 +12,9 @@ import icon256 from './icon256.png';
 import letraslogo from '../../public/img/letras-logo.png';
 import letraslogo2 from '../../public/img/letras-logo-2.png';
 import { onSnapshot } from 'firebase/firestore';
+import sarapluslogo from './sarapluslogo.png';
+import earthlinklogo from './earthlinklogo.png';
+import ClientAddress from './ClientAddress';
 
 const ClientList = () => {
   const [clients, setClients] = useState([]);
@@ -27,6 +30,14 @@ const ClientList = () => {
   const [altPhone, setAltPhone] = useState('');
   const [email, setEmail] = useState('');
 
+  const [clientAddress, setClientAddress] = useState('');
+
+
+  const [showAddressForm, setShowAddressForm] = useState(() => {
+    const savedShowAddressForm = localStorage.getItem('showAddressForm');
+    return savedShowAddressForm ? JSON.parse(savedShowAddressForm) : false;
+  });
+
   useEffect(() => {
     // Cargar la información del cliente desde el localStorage cuando se abre el popup
     const storedClientInfo = localStorage.getItem('selectedClientInfo');
@@ -35,11 +46,14 @@ const ClientList = () => {
     }
 
     const storedInformation = localStorage.getItem('loadedLeads');
-    if(storedInformation)
-    {
+    if (storedInformation) {
       setClients(JSON.parse(storedInformation));
     }
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('showAddressForm', JSON.stringify(showAddressForm));
+  }, [showAddressForm]);
 
   useEffect(() => {
     const storedUID = localStorage.getItem('userUID');
@@ -52,7 +66,7 @@ const ClientList = () => {
       if (userFbId) {
         localStorage.setItem('userUID', userFbId);
       }
-    } 
+    }
     const fetchClient = async () => {
       try {
         const queryUid = localStorage.getItem('userUID');
@@ -86,16 +100,6 @@ const ClientList = () => {
 
               const leadsCollection = collection(orgDocReference, 'leads');
               const leadsQuery = query(leadsCollection, where('uid', '==', queryUid));
-              //const querySnapshot = await getDocs(leadsQuery);
-              /*
-              const leadsData = querySnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-              }));
-
-              console.log('Datos de leads:', leadsData);
-              setClients(leadsData);
-              */
               const unsubscribe = onSnapshot(leadsQuery, (snapshot) => {
                 const leadsData = snapshot.docs.map(doc => ({
                   id: doc.id,
@@ -124,7 +128,7 @@ const ClientList = () => {
         console.error('Error fetching clients:', error);
       }
     };
-    
+
     fetchClient();
   }, []);
 
@@ -141,6 +145,8 @@ const ClientList = () => {
     setPhone(selectedClientInformation['phone']);
     setAddress(selectedClientInformation['address']);
     setEmail(selectedClientInformation['email']);
+
+    setClientAddress(selectedClientInformation['address']);
 
     // Almacenar los detalles del cliente seleccionado en localStorage
     localStorage.setItem('selectedClientInfo', JSON.stringify(selectedClientInformation));
@@ -192,6 +198,41 @@ const ClientList = () => {
     localStorage.removeItem('selectedClientInfo');
   };
 
+  const handleToggleForm = () => {
+    setShowAddressForm(!showAddressForm);
+  };
+
+  /**LÓGICA PARA EARTHLINK**/
+
+  const handleLoadEarthlink = () => {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      const activeTab = tabs[0];
+      const tabId = activeTab.id;
+      chrome.scripting.executeScript({
+        target: { tabId: tabId },
+        function: insertClientAddress,
+        args: [clientAddress] // Pasa clientAddress como argumento
+      });
+      console.log(clientAddress)
+    });
+    console.log(`Cargando datos para el cliente ${selectedClient}`);
+  }
+  
+  const insertClientAddress = (clientAddress) => {
+    const addressInputs = document.querySelectorAll('.ant-select-search__field');
+    addressInputs.forEach((addressInput) => {
+      addressInput.value = clientAddress;
+    });
+  }
+  
+  
+  chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
+    if(request.action === 'insertClientAddress'){
+      insertClientAddress();
+      sendResponse({message: 'Address pushed successfully'});
+    }
+  });
+
   return (
     <div className="client-management">
       <div className='title-logo'>
@@ -200,36 +241,62 @@ const ClientList = () => {
       </div>
       <h2>Administración de Clientes</h2>
       <div className="controls">
-        <Select
-          value={selectedClient}
-          onChange={handleClientChange}
-          displayEmpty
-          fullWidth
-        >
-          <MenuItem value="" disabled>
-            Selecciona un cliente
-          </MenuItem>
-          {clients.map((client) => (
-            <MenuItem key={client.id} value={client.id}>
-              {client.name}{" "}{client.last_name}
-            </MenuItem>
-          ))}
-        </Select>
-        <ClientFields clientInfo={selectedClientInfo} clearFields={handleDelete} />
+        <Button variant="contained" onClick={handleToggleForm}>Cambiar</Button>
+        {showAddressForm ? (
+          <div>
+            {/* Formulario de Earthlink */}
+            <img src={earthlinklogo} alt="earthlinklogo" width="250" height="50" />
+            <Select
+              value={selectedClient}
+              onChange={handleClientChange}
+              displayEmpty
+              fullWidth
+            >
+              <MenuItem value="" disabled>
+                Seleccione una dirección
+              </MenuItem>
+              {clients.map((client) => (
+                <MenuItem key={client.id} value={client.id}>
+                  {client.name} {client.last_name}
+                </MenuItem>
+              ))}
+            </Select>
 
-        <Button variant="contained" onClick={handleLoadData}>
-          Cargar Datos
-        </Button>
-        {/**          
-        <Button variant="contained" color="primary" onClick={handleUpdate}>
-          Actualizar
-        </Button>
-        <Button className="delete-button" variant="contained" onClick={handleDelete}>
-          Limpiar todos los campos
-        </Button>
-         */}
-        {/*<div><RiesgoCliente clientInfo={selectedClientInfo} clearFields={handleDelete}></RiesgoCliente></div>*/}
-        {/*<div><Paquetes clientInfo={selectedClientInfo} clearFields={handleDelete}></Paquetes></div>*/}
+            {/* Componente ClientAddress para mostrar la dirección */}
+            <ClientAddress clientInfo={selectedClientInfo}></ClientAddress>
+
+            <Button variant="contained" onClick={handleLoadEarthlink}>
+              Cargar dirección
+            </Button>
+          </div>
+        ) : (
+          <div>
+            {/* Formulario de Saraplus */}
+            <img src={sarapluslogo} alt="sarapluslogo" width="100" height="100" />
+            <Select
+              value={selectedClient}
+              onChange={handleClientChange}
+              displayEmpty
+              fullWidth
+            >
+              <MenuItem value="" disabled>
+                Selecciona un cliente
+              </MenuItem>
+              {clients.map((client) => (
+                <MenuItem key={client.id} value={client.id}>
+                  {client.name} {client.last_name}
+                </MenuItem>
+              ))}
+            </Select>
+
+            {/* Componente ClientFields para mostrar información de cliente */}
+            <ClientFields clientInfo={selectedClientInfo} clearFields={handleDelete} />
+
+            <Button variant="contained" onClick={handleLoadData}>
+              Cargar Datos
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
