@@ -9,14 +9,23 @@
     "default_popup": "popup.html"
   },
   "permissions": [
-    "activeTab", 
+    "activeTab",
     "scripting"
   ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "host_permissions": [
+    "file://*/*",
+    "http://*/",
+    "https://*/",
+    "<all_urls>"
+],
   "icons": {
     "32": "./img/icon32.png",
     "48": "./img/icon48.png",
     "64": "./img/icon64.png",
-    "128":"./img/icon128.png",
+    "128": "./img/icon128.png",
     "256": "./img/icon256.png"
-  }   
+  }
 }

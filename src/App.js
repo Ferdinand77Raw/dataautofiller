@@ -62,6 +62,7 @@ function App() {
     localStorage.removeItem('clientData');
     localStorage.removeItem('riesgoCliente');
     localStorage.removeItem('loadedLeads');
+    localStorage.removeItem('showAddressForm');
   };
 
   const handleClients = () => {

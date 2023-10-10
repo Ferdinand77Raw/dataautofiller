@@ -14,13 +14,25 @@ import letraslogo2 from '../../public/img/letras-logo-2.png';
 import { onSnapshot } from 'firebase/firestore';
 import sarapluslogo from './sarapluslogo.png';
 import earthlinklogo from './earthlinklogo.png';
-import ClientAddress from './ClientAddress';
+import ClientAddress from './ClientAddress.js';
+import att_logo from './att_logo.png';
+import AttPush from './AttPush.js';
 
 const ClientList = () => {
+  /**Leads */
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState('');
   const [selectedClientInfo, setSelectedClientInfo] = useState('');
   const [leads, setLeads] = useState([]);
+  /**Direcciones */
+  const [selectedAddress, setSelectedAddress] = useState('');
+  const [selectedAddressInfo, setSelectedAddressInfo] = useState('');
+  const [clientAddress, setClientAddress] = useState('');
+
+  /** AT&T*/
+  const [selectedAttId, setSelecedAttId] = useState('');
+  const [selectedAttInfo, setSelectedAttInfo] = useState('');
+  const [attId, setAttId] = useState('');
 
   //Constantes para pushear
   const [name, setName] = useState('');
@@ -30,13 +42,22 @@ const ClientList = () => {
   const [altPhone, setAltPhone] = useState('');
   const [email, setEmail] = useState('');
 
-  const [clientAddress, setClientAddress] = useState('');
+
+  const [streetAddress, setStreetAddres] = useState('');
+  const [zip, setZip] = useState('');
+  const [city, setCity] = useState('');
 
 
   const [showAddressForm, setShowAddressForm] = useState(() => {
     const savedShowAddressForm = localStorage.getItem('showAddressForm');
     return savedShowAddressForm ? JSON.parse(savedShowAddressForm) : false;
   });
+
+  const [showAttForm, setShowAttForm] = useState(false);
+
+  const handleToggleAttForm = () => {
+    setShowAttForm(!showAttForm);
+  };
 
   useEffect(() => {
     // Cargar la información del cliente desde el localStorage cuando se abre el popup
@@ -53,7 +74,11 @@ const ClientList = () => {
 
   useEffect(() => {
     localStorage.setItem('showAddressForm', JSON.stringify(showAddressForm));
-  }, [showAddressForm]);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('showAttForm', JSON.stringify(showAttForm));
+  }, []);
 
   useEffect(() => {
     const storedUID = localStorage.getItem('userUID');
@@ -148,10 +173,45 @@ const ClientList = () => {
 
     setClientAddress(selectedClientInformation['address']);
 
+    const parts = clientAddress.split(',');
+    const address = parts[0].trim();
+    setStreetAddres(address);
+
+
     // Almacenar los detalles del cliente seleccionado en localStorage
     localStorage.setItem('selectedClientInfo', JSON.stringify(selectedClientInformation));
     localStorage.setItem('clientData', JSON.stringify(selectedClientInformation));
   };
+
+  const handleEarthLinkClientChange = (event) => {
+    const selectedAddressId = event.target.value;
+    setSelectedAddress(selectedAddressId);
+
+    const selectedAddressInformation = clients.find(client => client.id === selectedAddressId);
+    setSelectedAddressInfo(selectedAddressInformation);
+
+    setClientAddress(selectedAddressInformation['address']);
+
+    const parts = clientAddress.split(',');
+    const address = parts[0].trim();
+    setStreetAddres(address);
+    // Almacenar los detalles del cliente seleccionado en localStorage
+    localStorage.setItem('selectedClientInfo', JSON.stringify(selectedAddressInformation));
+    localStorage.setItem('clientData', JSON.stringify(selectedAddressInformation));
+  }
+
+  const handleAttChange = (event) => {
+    const selectedAttId = event.target.value;
+    setSelecedAttId(selectedAttId);
+
+    const selectedAttInformation = clients.find(client => client.id === selectedAttId);
+    setSelectedAttInfo(selectedAttInformation);
+
+    setAttId(selectedAttInformation['uid']);
+
+    localStorage.setItem('selectedClientInfo', JSON.stringify(selectedAttInformation));
+    localStorage.setItem('clientData', JSON.stringify(selectedAttInformation));
+  }
 
   const handleLoadData = () => {
     // Lógica para cargar datos relacionados con el cliente seleccionado
@@ -208,23 +268,27 @@ const ClientList = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       const activeTab = tabs[0];
       const tabId = activeTab.id;
+
       chrome.scripting.executeScript({
         target: { tabId: tabId },
         function: insertClientAddress,
-        args: [clientAddress] // Pasa clientAddress como argumento
+        args: [clientAddress, streetAddress] // Pasa clientAddress como argumento
       });
-      console.log(clientAddress)
     });
-    console.log(`Cargando datos para el cliente ${selectedClient}`);
+    console.log(`Cargando datos para el cliente ${selectedAddress}`);
   }
   
-  const insertClientAddress = (clientAddress) => {
-    const addressInputs = document.querySelectorAll('.ant-select-search__field');
-    addressInputs.forEach((addressInput) => {
-      addressInput.value = clientAddress;
-    });
+  const insertClientAddress = (clientAddress, streetAddress) => {
+    // Obtén todos los elementos input
+    document.getElementsByClassName('ant-select-search__field').value = streetAddress;
+    //document.getElementById('mstid').value = streetAddress;
+    //document.getElementById('GloATTUID').value= streetAddress;
+    //document.getElementById('GloPassword').value = clientAddress;
+
+    // A continuación, busca el botón de verificación y haz clic en él
+    const checkAvailabilityButton = document.querySelector('.regBtn');
+    checkAvailabilityButton.click();
   }
-  
   
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     if(request.action === 'insertClientAddress'){
@@ -232,6 +296,40 @@ const ClientList = () => {
       sendResponse({message: 'Address pushed successfully'});
     }
   });
+
+  const handleLoadAtt = () => {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      const activeTab = tabs[0];
+      const tabId = activeTab.id;
+
+      chrome.scripting.executeScript({
+        target: { tabId: tabId },
+        function: insertAttId,
+        args: [attId] // Pasa clientAddress como argumento
+      });
+    });
+    console.log(`Cargando datos para el cliente ${selectedAttId}`);
+  }
+
+  const insertAttId = (attId) => {
+    // Obtén todos los elementos input
+ 
+    document.getElementById('mstid').value = attId;
+    //document.getElementById('GloATTUID').value= streetAddress;
+    //document.getElementById('GloPassword').value = clientAddress;
+
+    // A continuación, busca el botón de verificación y haz clic en él
+    /*const checkAvailabilityButton = document.querySelector('.login-button js-attuid');
+    checkAvailabilityButton.click();*/
+  }
+
+  chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
+    if(request.action === 'insertAttId'){
+      insertAttId();
+      sendResponse({message: 'Id pushed succesfully'});
+    }
+  });
+
 
   return (
     <div className="client-management">
@@ -242,13 +340,41 @@ const ClientList = () => {
       <h2>Administración de Clientes</h2>
       <div className="controls">
         <Button variant="contained" onClick={handleToggleForm}>Cambiar</Button>
-        {showAddressForm ? (
+        <Button variant="contained" onClick={handleToggleAttForm}>Cambiar a AT&T</Button>
+        {
+         showAttForm ? (
+          <div>
+            <img src={att_logo} alt="attlogo" width="50" height="50"></img>
+            <Select
+              value={selectedAttId}
+              onChange={handleAttChange}
+              displayEmpty
+              fullWidth
+            >
+              <MenuItem value="" disabled>
+                Seleccione un id
+              </MenuItem>
+              {clients.map((client) => (
+                <MenuItem key={client.id} value={client.id}>
+                  {client.id}
+                </MenuItem>
+              ))}
+            </Select>
+
+            <AttPush clientInfo={selectedAttInfo}></AttPush>
+
+            <Button variant='contained' onClick={handleLoadAtt}>
+              Cargar id
+            </Button>
+          </div>
+         ) :
+        showAddressForm ? (
           <div>
             {/* Formulario de Earthlink */}
             <img src={earthlinklogo} alt="earthlinklogo" width="250" height="50" />
             <Select
-              value={selectedClient}
-              onChange={handleClientChange}
+              value={selectedAddress}
+              onChange={handleEarthLinkClientChange}
               displayEmpty
               fullWidth
             >
@@ -257,13 +383,13 @@ const ClientList = () => {
               </MenuItem>
               {clients.map((client) => (
                 <MenuItem key={client.id} value={client.id}>
-                  {client.name} {client.last_name}
+                  {client.address}
                 </MenuItem>
               ))}
             </Select>
 
             {/* Componente ClientAddress para mostrar la dirección */}
-            <ClientAddress clientInfo={selectedClientInfo}></ClientAddress>
+            <ClientAddress clientInfo={selectedAddressInfo}></ClientAddress>
 
             <Button variant="contained" onClick={handleLoadEarthlink}>
               Cargar dirección
