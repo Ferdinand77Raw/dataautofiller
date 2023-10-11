@@ -63,6 +63,8 @@ function App() {
     localStorage.removeItem('riesgoCliente');
     localStorage.removeItem('loadedLeads');
     localStorage.removeItem('showAddressForm');
+    localStorage.removeItem('selectedAddressInfo');
+    localStorage.removeItem('selectedAttId');
   };
 
   const handleClients = () => {

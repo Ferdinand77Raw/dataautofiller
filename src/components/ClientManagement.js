@@ -17,6 +17,7 @@ import earthlinklogo from './earthlinklogo.png';
 import ClientAddress from './ClientAddress.js';
 import att_logo from './att_logo.png';
 import AttPush from './AttPush.js';
+import att_emblema from './att_emblema.png';
 
 const ClientList = () => {
   /**Leads */
@@ -42,22 +43,10 @@ const ClientList = () => {
   const [altPhone, setAltPhone] = useState('');
   const [email, setEmail] = useState('');
 
-
+  /**Variables extra de direcciones */
   const [streetAddress, setStreetAddres] = useState('');
   const [zip, setZip] = useState('');
   const [city, setCity] = useState('');
-
-
-  const [showAddressForm, setShowAddressForm] = useState(() => {
-    const savedShowAddressForm = localStorage.getItem('showAddressForm');
-    return savedShowAddressForm ? JSON.parse(savedShowAddressForm) : false;
-  });
-
-  const [showAttForm, setShowAttForm] = useState(false);
-
-  const handleToggleAttForm = () => {
-    setShowAttForm(!showAttForm);
-  };
 
   useEffect(() => {
     // Cargar la información del cliente desde el localStorage cuando se abre el popup
@@ -70,14 +59,23 @@ const ClientList = () => {
     if (storedInformation) {
       setClients(JSON.parse(storedInformation));
     }
+
+    const storedAddress = localStorage.getItem('selectedAddressInfo');
+    if(storedAddress){
+      setSelectedAddressInfo(JSON.parse(storedAddress));
+    }
+
+    const storedAttId = localStorage.getItem('selectedAttId');
+    if(storedAttId){
+      setSelectedAttInfo(JSON.parse(storedAttId));
+    }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('showAddressForm', JSON.stringify(showAddressForm));
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('showAttForm', JSON.stringify(showAttForm));
+    const savedComponentIndex = localStorage.getItem('currentComponentIndex');
+    if (savedComponentIndex !== null) {
+      setCurrentComponent(Number(savedComponentIndex));
+    }
   }, []);
 
   useEffect(() => {
@@ -191,13 +189,15 @@ const ClientList = () => {
     setSelectedAddressInfo(selectedAddressInformation);
 
     setClientAddress(selectedAddressInformation['address']);
+    setAddress(selectedAddressInformation['address']);
 
+    /*
     const parts = clientAddress.split(',');
     const address = parts[0].trim();
-    setStreetAddres(address);
+    setStreetAddres(address);*/
     // Almacenar los detalles del cliente seleccionado en localStorage
-    localStorage.setItem('selectedClientInfo', JSON.stringify(selectedAddressInformation));
-    localStorage.setItem('clientData', JSON.stringify(selectedAddressInformation));
+    localStorage.setItem('selectedAddressInfo', JSON.stringify(selectedAddressInformation));
+    localStorage.setItem('clientAddressInfo', JSON.stringify(selectedAddressInformation));
   }
 
   const handleAttChange = (event) => {
@@ -209,8 +209,8 @@ const ClientList = () => {
 
     setAttId(selectedAttInformation['uid']);
 
-    localStorage.setItem('selectedClientInfo', JSON.stringify(selectedAttInformation));
-    localStorage.setItem('clientData', JSON.stringify(selectedAttInformation));
+    localStorage.setItem('selectedAttId', JSON.stringify(selectedAttInformation));
+    localStorage.setItem('clientAttId', JSON.stringify(selectedAttInformation));
   }
 
   const handleLoadData = () => {
@@ -258,9 +258,6 @@ const ClientList = () => {
     localStorage.removeItem('selectedClientInfo');
   };
 
-  const handleToggleForm = () => {
-    setShowAddressForm(!showAddressForm);
-  };
 
   /**LÓGICA PARA EARTHLINK**/
 
@@ -268,34 +265,51 @@ const ClientList = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       const activeTab = tabs[0];
       const tabId = activeTab.id;
-
+  
       chrome.scripting.executeScript({
         target: { tabId: tabId },
         function: insertClientAddress,
-        args: [clientAddress, streetAddress] // Pasa clientAddress como argumento
+        args: [address]
       });
     });
-    console.log(`Cargando datos para el cliente ${selectedAddress}`);
   }
-
-  const insertClientAddress = (clientAddress, streetAddress) => {
-    // Obtén todos los elementos input
-    document.getElementsByClassName('ant-select-search__field').value = streetAddress;
-    //document.getElementById('mstid').value = streetAddress;
-    //document.getElementById('GloATTUID').value= streetAddress;
-    //document.getElementById('GloPassword').value = clientAddress;
-
-    // A continuación, busca el botón de verificación y haz clic en él
-    const checkAvailabilityButton = document.querySelector('.regBtn');
-    checkAvailabilityButton.click();
+  
+  const insertClientAddress = (address) => {
+    console.log("La dirección seteada es: ", address);
+  
+    // Obtén el primer elemento que coincida con la clase 'ant-select-search__field'
+    const inputElement = document.querySelector('.ant-select-search__field');
+  
+    if (inputElement) {
+      // Establece el valor del campo de entrada
+      inputElement.value = address;
+  
+      // Simula un evento 'input' para que la página pueda reaccionar al cambio
+      const inputEvent = new Event('input', {
+        bubbles: true,
+        cancelable: true,
+      });
+      inputElement.dispatchEvent(inputEvent);
+  
+      // Si es necesario, puedes hacer clic en el botón de verificación después de establecer el valor.
+      /*
+      const checkAvailabilityButton = document.querySelector('.regBtn');
+      if (checkAvailabilityButton) {
+        checkAvailabilityButton.click();
+      }
+      */
+    } else {
+      console.error('No se encontró ningún elemento con la clase "ant-select-search__field".');
+    }
   }
-
+  
   chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.action === 'insertClientAddress') {
-      insertClientAddress();
+      insertClientAddress(request.address);
       sendResponse({ message: 'Address pushed successfully' });
     }
   });
+  
 
   const handleLoadAtt = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -386,7 +400,7 @@ const ClientList = () => {
 
   const componente3 = () => (
     <div>
-      <img src={att_logo} alt='attlogo' width="50" height="50"></img>
+      <img src={att_emblema} alt='attlogo' width="200" height="112"></img>
       <Select
         value={selectedAttId}
         onChange={handleAttChange}
@@ -420,12 +434,14 @@ const ClientList = () => {
 
   const handleNext = () => {
     if (currentComponent < components.length - 1) {
+      localStorage.setItem('currentComponentIndex', String(currentComponent + 1));
       setCurrentComponent(currentComponent + 1);
     }
   };
 
   const handlePrevious = () => {
     if (currentComponent > 0) {
+      localStorage.setItem('currentComponentIndex', String(currentComponent - 1));
       setCurrentComponent(currentComponent - 1);
     }
   };
@@ -439,8 +455,6 @@ const ClientList = () => {
       <h2>Administración de Clientes</h2>
       <div className="controls">
         {components[currentComponent]()}
-
-
         <Button variant="contained" onClick={handlePrevious}>Anterior</Button>
         <Button variant="contained" onClick={handleNext}>Siguiente</Button>
       </div>
