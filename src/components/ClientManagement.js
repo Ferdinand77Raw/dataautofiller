@@ -277,7 +277,7 @@ const ClientList = () => {
     });
     console.log(`Cargando datos para el cliente ${selectedAddress}`);
   }
-  
+
   const insertClientAddress = (clientAddress, streetAddress) => {
     // Obtén todos los elementos input
     document.getElementsByClassName('ant-select-search__field').value = streetAddress;
@@ -289,11 +289,11 @@ const ClientList = () => {
     const checkAvailabilityButton = document.querySelector('.regBtn');
     checkAvailabilityButton.click();
   }
-  
-  chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-    if(request.action === 'insertClientAddress'){
+
+  chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (request.action === 'insertClientAddress') {
       insertClientAddress();
-      sendResponse({message: 'Address pushed successfully'});
+      sendResponse({ message: 'Address pushed successfully' });
     }
   });
 
@@ -313,23 +313,122 @@ const ClientList = () => {
 
   const insertAttId = (attId) => {
     // Obtén todos los elementos input
- 
     document.getElementById('mstid').value = attId;
-    //document.getElementById('GloATTUID').value= streetAddress;
-    //document.getElementById('GloPassword').value = clientAddress;
-
     // A continuación, busca el botón de verificación y haz clic en él
     /*const checkAvailabilityButton = document.querySelector('.login-button js-attuid');
     checkAvailabilityButton.click();*/
   }
 
-  chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-    if(request.action === 'insertAttId'){
+  chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (request.action === 'insertAttId') {
       insertAttId();
-      sendResponse({message: 'Id pushed succesfully'});
+      sendResponse({ message: 'Id pushed succesfully' });
     }
   });
 
+  const componente1 = () => (
+    <div>
+      {/* Formulario de Saraplus */}
+      <img src={sarapluslogo} alt="sarapluslogo" width="100" height="100" />
+      <Select
+        value={selectedClient}
+        onChange={handleClientChange}
+        displayEmpty
+        fullWidth
+      >
+        <MenuItem value="" disabled>
+          Selecciona un cliente
+        </MenuItem>
+        {clients.map((client) => (
+          <MenuItem key={client.id} value={client.id}>
+            {client.name} {client.last_name}
+          </MenuItem>
+        ))}
+      </Select>
+
+      {/* Componente ClientFields para mostrar información de cliente */}
+      <ClientFields clientInfo={selectedClientInfo} clearFields={handleDelete} />
+
+      <Button variant="contained" onClick={handleLoadData}>
+        Cargar Datos
+      </Button>
+    </div>
+  )
+
+  const componente2 = () => (
+    <div>
+      {/* Formulario de Earthlink */}
+      <img src={earthlinklogo} alt="earthlinklogo" width="250" height="50" />
+      <Select
+        value={selectedAddress}
+        onChange={handleEarthLinkClientChange}
+        displayEmpty
+        fullWidth
+      >
+        <MenuItem value="" disabled>
+          Seleccione una dirección
+        </MenuItem>
+        {clients.map((client) => (
+          <MenuItem key={client.id} value={client.id}>
+            {client.address}
+          </MenuItem>
+        ))}
+      </Select>
+
+      {/* Componente ClientAddress para mostrar la dirección */}
+      <ClientAddress clientInfo={selectedAddressInfo}></ClientAddress>
+
+      <Button variant="contained" onClick={handleLoadEarthlink}>
+        Cargar dirección
+      </Button>
+    </div>
+  )
+
+  const componente3 = () => (
+    <div>
+      <img src={att_logo} alt='attlogo' width="50" height="50"></img>
+      <Select
+        value={selectedAttId}
+        onChange={handleAttChange}
+        displayEmpty
+        fullWidth
+      >
+        <MenuItem value="" disabled>
+          Seleccione un id
+        </MenuItem>
+        {clients.map((client) => (
+          <MenuItem key={client.id} value={client.id}>
+            {client.id}
+          </MenuItem>
+        ))}
+      </Select>
+
+      <AttPush clientInfo={selectedAttInfo}></AttPush>
+
+      <Button variant='contained' onClick={handleLoadAtt}>
+        Cargar id
+      </Button>
+    </div>
+  );
+
+  const [currentComponent, setCurrentComponent] = useState(0);
+  const components = [
+    componente1,
+    componente2,
+    componente3
+  ];
+
+  const handleNext = () => {
+    if (currentComponent < components.length - 1) {
+      setCurrentComponent(currentComponent + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentComponent > 0) {
+      setCurrentComponent(currentComponent - 1);
+    }
+  };
 
   return (
     <div className="client-management">
@@ -339,90 +438,11 @@ const ClientList = () => {
       </div>
       <h2>Administración de Clientes</h2>
       <div className="controls">
-        <Button variant="contained" onClick={handleToggleForm}>Cambiar</Button>
-        <Button variant="contained" onClick={handleToggleAttForm}>Cambiar a AT&T</Button>
-        {
-         showAttForm ? (
-          <div>
-            <img src={att_logo} alt="attlogo" width="50" height="50"></img>
-            <Select
-              value={selectedAttId}
-              onChange={handleAttChange}
-              displayEmpty
-              fullWidth
-            >
-              <MenuItem value="" disabled>
-                Seleccione un id
-              </MenuItem>
-              {clients.map((client) => (
-                <MenuItem key={client.id} value={client.id}>
-                  {client.id}
-                </MenuItem>
-              ))}
-            </Select>
+        {components[currentComponent]()}
 
-            <AttPush clientInfo={selectedAttInfo}></AttPush>
 
-            <Button variant='contained' onClick={handleLoadAtt}>
-              Cargar id
-            </Button>
-          </div>
-         ) :
-        showAddressForm ? (
-          <div>
-            {/* Formulario de Earthlink */}
-            <img src={earthlinklogo} alt="earthlinklogo" width="250" height="50" />
-            <Select
-              value={selectedAddress}
-              onChange={handleEarthLinkClientChange}
-              displayEmpty
-              fullWidth
-            >
-              <MenuItem value="" disabled>
-                Seleccione una dirección
-              </MenuItem>
-              {clients.map((client) => (
-                <MenuItem key={client.id} value={client.id}>
-                  {client.address}
-                </MenuItem>
-              ))}
-            </Select>
-
-            {/* Componente ClientAddress para mostrar la dirección */}
-            <ClientAddress clientInfo={selectedAddressInfo}></ClientAddress>
-
-            <Button variant="contained" onClick={handleLoadEarthlink}>
-              Cargar dirección
-            </Button>
-          </div>
-        ) : (
-          <div>
-            {/* Formulario de Saraplus */}
-            <img src={sarapluslogo} alt="sarapluslogo" width="100" height="100" />
-            <Select
-              value={selectedClient}
-              onChange={handleClientChange}
-              displayEmpty
-              fullWidth
-            >
-              <MenuItem value="" disabled>
-                Selecciona un cliente
-              </MenuItem>
-              {clients.map((client) => (
-                <MenuItem key={client.id} value={client.id}>
-                  {client.name} {client.last_name}
-                </MenuItem>
-              ))}
-            </Select>
-
-            {/* Componente ClientFields para mostrar información de cliente */}
-            <ClientFields clientInfo={selectedClientInfo} clearFields={handleDelete} />
-
-            <Button variant="contained" onClick={handleLoadData}>
-              Cargar Datos
-            </Button>
-          </div>
-        )}
+        <Button variant="contained" onClick={handlePrevious}>Anterior</Button>
+        <Button variant="contained" onClick={handleNext}>Siguiente</Button>
       </div>
     </div>
   );
