@@ -12,12 +12,16 @@ import icon256 from './icon256.png';
 import letraslogo from '../../public/img/letras-logo.png';
 import letraslogo2 from '../../public/img/letras-logo-2.png';
 import { onSnapshot } from 'firebase/firestore';
-import sarapluslogo from './sarapluslogo.png';
-import earthlinklogo from './earthlinklogo.png';
 import ClientAddress from './ClientAddress.js';
 import att_logo from './att_logo.png';
 import AttPush from './AttPush.js';
-import att_emblema from './att_emblema.png';
+import IconButton from '@mui/material/IconButton';
+import { AiFillCaretLeft } from "react-icons/ai";
+import { AiFillCaretRight } from "react-icons/ai";
+
+import sarapluslogo from './sarapluslogo.png';
+import earthlinklogo from './earthlinklogo.png';
+import att_emblema from './att-logo-0.png';
 
 const ClientList = () => {
   /**Leads */
@@ -61,12 +65,12 @@ const ClientList = () => {
     }
 
     const storedAddress = localStorage.getItem('selectedAddressInfo');
-    if(storedAddress){
+    if (storedAddress) {
       setSelectedAddressInfo(JSON.parse(storedAddress));
     }
 
     const storedAttId = localStorage.getItem('selectedAttId');
-    if(storedAttId){
+    if (storedAttId) {
       setSelectedAttInfo(JSON.parse(storedAttId));
     }
   }, []);
@@ -265,7 +269,7 @@ const ClientList = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       const activeTab = tabs[0];
       const tabId = activeTab.id;
-  
+
       chrome.scripting.executeScript({
         target: { tabId: tabId },
         function: insertClientAddress,
@@ -273,24 +277,24 @@ const ClientList = () => {
       });
     });
   }
-  
+
   const insertClientAddress = (address) => {
     console.log("La dirección seteada es: ", address);
-  
+
     // Obtén el primer elemento que coincida con la clase 'ant-select-search__field'
     const inputElement = document.querySelector('.ant-select-search__field');
-  
+
     if (inputElement) {
       // Establece el valor del campo de entrada
       inputElement.value = address;
-  
+
       // Simula un evento 'input' para que la página pueda reaccionar al cambio
       const inputEvent = new Event('input', {
         bubbles: true,
         cancelable: true,
       });
       inputElement.dispatchEvent(inputEvent);
-  
+
       // Si es necesario, puedes hacer clic en el botón de verificación después de establecer el valor.
       /*
       const checkAvailabilityButton = document.querySelector('.regBtn');
@@ -302,14 +306,14 @@ const ClientList = () => {
       console.error('No se encontró ningún elemento con la clase "ant-select-search__field".');
     }
   }
-  
+
   chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.action === 'insertClientAddress') {
       insertClientAddress(request.address);
       sendResponse({ message: 'Address pushed successfully' });
     }
   });
-  
+
 
   const handleLoadAtt = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -343,7 +347,7 @@ const ClientList = () => {
   const componente1 = () => (
     <div>
       {/* Formulario de Saraplus */}
-      <img src={sarapluslogo} alt="sarapluslogo" width="100" height="100" />
+      <img src={sarapluslogo} alt="sarapluslogo" width="100"/>
       <Select
         value={selectedClient}
         onChange={handleClientChange}
@@ -372,7 +376,7 @@ const ClientList = () => {
   const componente2 = () => (
     <div>
       {/* Formulario de Earthlink */}
-      <img src={earthlinklogo} alt="earthlinklogo" width="250" height="50" />
+      <img src={earthlinklogo} alt="earthlinklogo" width="250"/>
       <Select
         value={selectedAddress}
         onChange={handleEarthLinkClientChange}
@@ -400,7 +404,7 @@ const ClientList = () => {
 
   const componente3 = () => (
     <div>
-      <img src={att_emblema} alt='attlogo' width="200" height="112"></img>
+      <img src={att_emblema} alt='attlogo' width="100" height="100"></img>
       <Select
         value={selectedAttId}
         onChange={handleAttChange}
@@ -455,8 +459,22 @@ const ClientList = () => {
       <h2>Administración de Clientes</h2>
       <div className="controls">
         {components[currentComponent]()}
-        <Button variant="contained" onClick={handlePrevious}>Anterior</Button>
-        <Button variant="contained" onClick={handleNext}>Siguiente</Button>
+        <div className="control-buttons">
+          <table className="centered-buttons">
+            <tbody>
+              <tr>
+                <td>
+                  <button onClick={handlePrevious} className='rounded-button'>
+                    <AiFillCaretLeft />
+                  </button>
+                  <button onClick={handleNext} className='rounded-button'>
+                    <AiFillCaretRight />
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

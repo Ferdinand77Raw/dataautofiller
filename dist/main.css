@@ -117,6 +117,7 @@ button {
 .MuiButton-containedPrimary {
   background-color: #007bff;
   color: #fff;
+  width: 50;
 }
 
 .MuiButton-containedPrimary:hover {
@@ -148,6 +149,31 @@ button {
 .controls button.delete-button:hover {
   background-color: #a71d2a;
 }
+
+.control-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.centered-buttons {
+  text-align: center; /* Centra el contenido horizontalmente */
+}
+
+.rounded-button {
+  border-radius: 15px; /* Hace que los botones sean redondos */
+  width: 25px; /* Ajusta el ancho deseado */
+  height: 25px; /* Ajusta la altura deseada */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #007bff; /* Cambia el color de fondo si es necesario */
+  color: #fff; /* Cambia el color del texto si es necesario */
+  cursor: pointer; /* Agrega un cursor al pasar el mouse sobre el botón */
+  border: none; /* Quita el borde del botón */
+  margin: 5px; /* Agrega margen entre los botones */
+}
+
 /* Paquetes.css */
 
 .paquetes {
