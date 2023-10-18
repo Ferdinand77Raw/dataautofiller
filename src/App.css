@@ -3,13 +3,13 @@
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 20vmin;
   pointer-events: none;
 }
 
 /* Estilos para la extensión minimizada */
 .App.minimized {
-  height: 40px; /* Altura mínima de la extensión cuando está minimizada */
+  height: 20px; /* Altura mínima de la extensión cuando está minimizada */
   overflow: hidden; /* Ocultar contenido adicional cuando está minimizada */
 }
 

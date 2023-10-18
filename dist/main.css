@@ -19,13 +19,13 @@ code {
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 20vmin;
   pointer-events: none;
 }
 
 /* Estilos para la extensión minimizada */
 .App.minimized {
-  height: 40px; /* Altura mínima de la extensión cuando está minimizada */
+  height: 20px; /* Altura mínima de la extensión cuando está minimizada */
   overflow: hidden; /* Ocultar contenido adicional cuando está minimizada */
 }
 
@@ -67,9 +67,9 @@ button {
 /* ClientManagement.css */
 
 .client-management {
-  max-width: 400px;
+  max-width: 500px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 8px;
   background-color: #f5f5f5;

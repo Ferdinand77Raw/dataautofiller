@@ -65,6 +65,7 @@ function App() {
     localStorage.removeItem('showAddressForm');
     localStorage.removeItem('selectedAddressInfo');
     localStorage.removeItem('selectedAttId');
+    localStorage.removeItem('clientAttId');
   };
 
   const handleClients = () => {

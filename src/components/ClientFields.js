@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
 import './ClientManagement.css';
 
 const ClientFields = ({ clientInfo, clearFields }) => {
@@ -17,7 +16,7 @@ const ClientFields = ({ clientInfo, clearFields }) => {
   }, [clientInfo, isDisabled]);
 
   return (
-    <div>
+    <div className='client-fields'>
       <TextField
         id='client_info'
         variant='outlined'

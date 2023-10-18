@@ -1,0 +1,17 @@
+/* ClientFields.css */
+
+.client-fields {
+    max-width: 300px; /* Ajusta el ancho máximo del componente */
+    margin: 0 auto; /* Centra el componente horizontalmente */
+    padding: 0px; /* Ajusta el relleno interno */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f5f5f5;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .client-fields .MuiTextField-root {
+    margin-bottom: 0px; /* Ajusta el margen inferior entre los campos */
+    width: 100%; /* Ajusta el ancho de los campos de texto al 100% */
+  }
+  

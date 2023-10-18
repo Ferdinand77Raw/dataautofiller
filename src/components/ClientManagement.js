@@ -9,13 +9,10 @@ import ClientFields from './ClientFields.js';
 import Paquetes from './Paquetes';
 import RiesgoCliente from './RiesgoCliente';
 import icon256 from './icon256.png';
-import letraslogo from '../../public/img/letras-logo.png';
 import letraslogo2 from '../../public/img/letras-logo-2.png';
 import { onSnapshot } from 'firebase/firestore';
 import ClientAddress from './ClientAddress.js';
-import att_logo from './att_logo.png';
 import AttPush from './AttPush.js';
-import IconButton from '@mui/material/IconButton';
 import { AiFillCaretLeft } from "react-icons/ai";
 import { AiFillCaretRight } from "react-icons/ai";
 
@@ -69,9 +66,9 @@ const ClientList = () => {
       setSelectedAddressInfo(JSON.parse(storedAddress));
     }
 
-    const storedAttId = localStorage.getItem('selectedAttId');
+    const storedAttId = localStorage.getItem('clientAttId');
     if (storedAttId) {
-      setSelectedAttInfo(JSON.parse(storedAttId));
+      setAttId(JSON.parse(storedAttId));
     }
   }, []);
 
@@ -123,7 +120,13 @@ const ClientList = () => {
               // Ahora puedes obtener los datos del documento de la organización
               const organizationData = organizationDoc.data();
               console.log('Datos de la organización:', organizationData);
+              console.log('Attuid es así: ', organizationData['attuid']);
               // Aquí puedes hacer lo que necesites con los datos de la organización
+              const attuid = organizationData['attuid'];
+              console.log("El attuid es: ", attuid);
+              setAttId(attuid);
+              localStorage.setItem('selectedAttId', JSON.stringify(attuid));
+              localStorage.setItem('clientAttId', JSON.stringify(attuid));
 
               const leadsCollection = collection(orgDocReference, 'leads');
               const leadsQuery = query(leadsCollection, where('uid', '==', queryUid));
@@ -316,6 +319,7 @@ const ClientList = () => {
 
 
   const handleLoadAtt = () => {
+
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       const activeTab = tabs[0];
       const tabId = activeTab.id;
@@ -326,16 +330,25 @@ const ClientList = () => {
         args: [attId] // Pasa clientAddress como argumento
       });
     });
+
+    let execInjection = chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      const activeTab = tabs[0];
+      const tabId = activeTab.id;
+
+      chrome.scripting.executeScript({
+        target: { tabId: tabId },
+        function: executeClick,
+      });
+    });
+    setTimeout(execInjection, 500);
     console.log(`Cargando datos para el cliente ${selectedAttId}`);
   }
 
   const insertAttId = (attId) => {
     // Obtén todos los elementos input
     document.getElementById('mstid').value = attId;
-    // A continuación, busca el botón de verificación y haz clic en él
-    /*const checkAvailabilityButton = document.querySelector('.login-button js-attuid');
-    checkAvailabilityButton.click();*/
   }
+
 
   chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.action === 'insertAttId') {
@@ -344,10 +357,24 @@ const ClientList = () => {
     }
   });
 
+  const executeClick = () => {
+    // A continuación, busca el botón de verificación y haz clic en él
+    const checkAvailabilityButton = document.querySelector('.login-button js-attuid');
+    checkAvailabilityButton.click();
+  }
+
+  chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (request.action === 'executeClick') {
+      executeClick();
+      sendResponse({ message: 'Button clicked succesfully' });
+    }
+  });
+
+
   const componente1 = () => (
     <div>
       {/* Formulario de Saraplus */}
-      <img src={sarapluslogo} alt="sarapluslogo" width="100"/>
+      <img src={sarapluslogo} alt="sarapluslogo" width="100" />
       <Select
         value={selectedClient}
         onChange={handleClientChange}
@@ -376,7 +403,7 @@ const ClientList = () => {
   const componente2 = () => (
     <div>
       {/* Formulario de Earthlink */}
-      <img src={earthlinklogo} alt="earthlinklogo" width="250"/>
+      <img src={earthlinklogo} alt="earthlinklogo" width="250" />
       <Select
         value={selectedAddress}
         onChange={handleEarthLinkClientChange}
@@ -404,25 +431,8 @@ const ClientList = () => {
 
   const componente3 = () => (
     <div>
-      <img src={att_emblema} alt='attlogo' width="100" height="100"></img>
-      <Select
-        value={selectedAttId}
-        onChange={handleAttChange}
-        displayEmpty
-        fullWidth
-      >
-        <MenuItem value="" disabled>
-          Seleccione un id
-        </MenuItem>
-        {clients.map((client) => (
-          <MenuItem key={client.id} value={client.id}>
-            {client.id}
-          </MenuItem>
-        ))}
-      </Select>
-
-      <AttPush clientInfo={selectedAttInfo}></AttPush>
-
+      <img src={att_emblema} alt='attlogo' width="50" height="50"></img>
+      <AttPush clientInfo={attId}></AttPush>
       <Button variant='contained' onClick={handleLoadAtt}>
         Cargar id
       </Button>

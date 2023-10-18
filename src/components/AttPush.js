@@ -9,8 +9,9 @@ const AttData = ({ clientInfo }) => {
                 id='client_info'
                 variant='outlined'
                 placeholder="Name"
-                value={clientInfo.uid}
+                value={clientInfo}
                 fullWidth
+                type='password'
             >
             </TextField>
         </div>
