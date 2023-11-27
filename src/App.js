@@ -24,13 +24,6 @@ function App() {
       setClients(clientData);
     }
   }, []); // El segundo argumento vacío [] asegura que este efecto se ejecute solo una vez al montar el componente
-  /*
-  chrome.runtime.onMessage.addListener((message) => {
-    if (message.value === 'openPopup') {
-      setOpen(false);
-      alert('Popup');
-    }
-  });*/
 
   const handleLogin = async (email, password, companyName) => {
     // Lógica de autenticación

@@ -67,7 +67,7 @@ const ClientList = () => {
     }
 
     const storedAttId = localStorage.getItem('clientAttId');
-    if (storedAttId) {
+    if (storedAttId !== null && storedAttId !== undefined) {
       setAttId(JSON.parse(storedAttId));
     }
   }, []);
@@ -123,10 +123,15 @@ const ClientList = () => {
               console.log('Attuid es así: ', organizationData['attuid']);
               // Aquí puedes hacer lo que necesites con los datos de la organización
               const attuid = organizationData['attuid'];
-              console.log("El attuid es: ", attuid);
-              setAttId(attuid);
-              localStorage.setItem('selectedAttId', JSON.stringify(attuid));
-              localStorage.setItem('clientAttId', JSON.stringify(attuid));
+              if (attuid) {
+                setAttId(attuid);
+                localStorage.setItem('selectedAttId', JSON.stringify(attuid));
+                localStorage.setItem('clientAttId', JSON.stringify(attuid));
+                console.log("El attuid es: ", attuid);
+              } else {
+                console.error('No se encontró un valor válido para attuid en la organización.');
+                // Puedes manejar esta situación según tus necesidades, como establecer un valor predeterminado o mostrar un mensaje de error.
+              }
 
               const leadsCollection = collection(orgDocReference, 'leads');
               const leadsQuery = query(leadsCollection, where('uid', '==', queryUid));
@@ -299,12 +304,12 @@ const ClientList = () => {
       inputElement.dispatchEvent(inputEvent);
 
       // Si es necesario, puedes hacer clic en el botón de verificación después de establecer el valor.
-      /*
+
       const checkAvailabilityButton = document.querySelector('.regBtn');
       if (checkAvailabilityButton) {
         checkAvailabilityButton.click();
       }
-      */
+
     } else {
       console.error('No se encontró ningún elemento con la clase "ant-select-search__field".');
     }
@@ -331,7 +336,7 @@ const ClientList = () => {
       });
     });
 
-    let execInjection = chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       const activeTab = tabs[0];
       const tabId = activeTab.id;
 
@@ -340,36 +345,31 @@ const ClientList = () => {
         function: executeClick,
       });
     });
-    setTimeout(execInjection, 500);
+    //setTimeout(execInjection, 500);
     console.log(`Cargando datos para el cliente ${selectedAttId}`);
   }
 
   const insertAttId = (attId) => {
-    // Obtén todos los elementos input
-    document.getElementById('mstid').value = attId;
-  }
+    // Obtén el elemento input
+    const mstidInput = document.getElementById('mstid');
 
+    if (mstidInput) {
+      // Guarda el valor actual antes de cambiar el tipo
+      const currentValue = mstidInput.value;
+
+      // Cambia el tipo a 'text', asigna el valor y luego vuelve a 'password'
+      mstidInput.type = 'text';
+      mstidInput.value = currentValue + attId;
+      mstidInput.type = 'password';
+    }
+  };
 
   chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.action === 'insertAttId') {
-      insertAttId();
-      sendResponse({ message: 'Id pushed succesfully' });
+      insertAttId(request.attId);
+      sendResponse({ message: 'Id pushed successfully' });
     }
   });
-
-  const executeClick = () => {
-    // A continuación, busca el botón de verificación y haz clic en él
-    const checkAvailabilityButton = document.querySelector('.login-button js-attuid');
-    checkAvailabilityButton.click();
-  }
-
-  chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    if (request.action === 'executeClick') {
-      executeClick();
-      sendResponse({ message: 'Button clicked succesfully' });
-    }
-  });
-
 
   const componente1 = () => (
     <div>

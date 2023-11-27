@@ -3,10 +3,8 @@ import Button from '@mui/material/Button';
 import './LoginComponent.css';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import { auth, logInWithEmailAndPassword } from '../services/FirebaseAuth.js';
+import {logInWithEmailAndPassword } from '../services/FirebaseAuth.js';
 import icon256 from './icon256.png';
-//import logoNuevo from '../../public/img/logoNuevo.png';
-import letraslogo from '../../public/img/letras-logo.png';
 import letraslogo2 from '../../public/img/letras-logo-2.png';
 import { Alert } from '@mui/material';
 

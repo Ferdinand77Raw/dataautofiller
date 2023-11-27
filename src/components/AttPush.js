@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
-
 
 const AttData = ({ clientInfo }) => {
     return (
